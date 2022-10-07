@@ -113,13 +113,17 @@ def refine_illumination_map_linear(L: np.ndarray, gamma: float, lambda_: float, 
 def main():
     src = './pics/'
     start = time.time()
-    img = np.array(Image.open(src+'/1.png'), dtype=np.float32) /255
+    img = np.array(Image.open(src+'/1.png'), dtype=np.float32) / 255
     gray = np.max(img, axis=2)
     kernel = create_spacial_affinity_kernel(3)
-    gray = refine_illumination_map_linear(gray,0.6,0.2,kernel=kernel) * 255
-    gray = np.repeat()
-    gray = Image.fromarray(np.uint8(gray))
-    gray.save(src+'/2.png')
+    gray = refine_illumination_map_linear(gray,0.6,0.2,kernel=kernel)
+    gray = np.repeat(gray[..., None], 3, axis=-1)
+    gray = gray * 0.99 + 0.01
+    # gray = Image.fromarray(np.uint8(gray))
+    # gray.save(src+'/2.png')
+    img = img / gray * 255
+    img = Image.fromarray(np.uint8(img))
+    img.save(src+'/2.png')
     print('{} seconds!'.format(time.time() - start))
 
 if __name__ == '__main__':
